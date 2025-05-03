@@ -1,0 +1,11 @@
+src/
+test/
+e2e/
+example/
+*.ts
+*.tsx
+*.map
+node_modules/
+.git/
+.gitignore
+npm-debug.log
