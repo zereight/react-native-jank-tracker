@@ -7,10 +7,16 @@
     "module": "esnext",
     "target": "esnext",
     "moduleResolution": "node",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "outDir": "./dist",
+    "rootDir": "."
   },
+  "include": [
+    "src/**/*",
+    "test/**/*",
+    "example/__tests__/**/*"
+  ],
   "exclude": [
     "e2e"
-  ],
-  "outDir": "./dist"
+  ]
 }
