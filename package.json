@@ -10,9 +10,13 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "tsc",
+    "build": "tsc && node scripts/copy-dist-package.js",
+    "build:example": "yarn build && cd example && yarn install",
+    "ios:example": "yarn build:example && cd example && yarn ios",
+    "android:example": "yarn build:example && cd example && yarn android",
     "example": "cd example && npx react-native run-ios",
-    "e2e": "detox test"
+    "e2e": "detox test",
+    "start": "cd example && yarn start"
   },
   "repository": {
     "type": "git",
