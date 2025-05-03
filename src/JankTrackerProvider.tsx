@@ -1,6 +1,10 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { JankContext, JankEvent } from './JankContext';
 
+export function isJank(delta: number): boolean {
+  return delta > 16;
+}
+
 const JankTrackerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [lastJank, setLastJank] = useState<JankEvent | null>(null);
   const lastTs = useRef<number>(Date.now());
@@ -10,7 +14,7 @@ const JankTrackerProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const tick = () => {
       const now = Date.now();
       const delta = now - lastTs.current;
-      if (delta > 16) {
+      if (isJank(delta)) {
         setLastJank({ timestamp: now, delta });
       }
       lastTs.current = now;
