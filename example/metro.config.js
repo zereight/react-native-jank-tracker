@@ -18,6 +18,10 @@ const customConfig = {
       react: path.resolve(__dirname, 'node_modules/react'),
       'react-native': path.resolve(__dirname, 'node_modules/react-native'),
       '@babel/runtime': path.resolve(__dirname, 'node_modules/@babel/runtime'),
+      'use-context-selector': path.resolve(
+        __dirname,
+        'node_modules/use-context-selector',
+      ),
     },
   },
 };

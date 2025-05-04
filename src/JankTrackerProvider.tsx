@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import * as React from 'react';
 import { JankContext, JankEvent } from './JankContext';
 
 export function isJank(delta: number): boolean {
@@ -6,10 +6,10 @@ export function isJank(delta: number): boolean {
 }
 
 const JankTrackerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [lastJank, setLastJank] = useState<JankEvent | null>(null);
-  const lastTs = useRef<number>(Date.now());
+  const [lastJank, setLastJank] = React.useState<JankEvent | null>(null);
+  const lastTs = React.useRef<number>(Date.now());
 
-  useEffect(() => {
+  React.useEffect(() => {
     let rafId: number;
     const tick = () => {
       const now = Date.now();
@@ -24,11 +24,7 @@ const JankTrackerProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => cancelAnimationFrame(rafId);
   }, []);
 
-  return (
-    <JankContext.Provider value={{ lastJank, setLastJank }}>
-      {children}
-    </JankContext.Provider>
-  );
+  return <JankContext.Provider value={{ lastJank, setLastJank }}>{children}</JankContext.Provider>;
 };
 
 export default JankTrackerProvider;
