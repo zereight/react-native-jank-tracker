@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, Pressable, View } from 'react-native';
-import { useTTIMeasure } from 'react-native-jank-tracker';
+import React, {useState} from 'react';
+import {StyleSheet, Text, Pressable, View} from 'react-native';
+import {useTTIMeasure} from 'react-native-jank-tracker';
+
+// 랜덤 지연을 시뮬레이션하는 함수를 분리
+const simulateDelay = () => {
+  const delay = Math.random() * 300 + 500;
+  const startTime = performance.now();
+  while (performance.now() - startTime < delay) {
+    // 빈 루프로 JS 스레드 블로킹
+  }
+};
 
 const BasicTTIMeasure = () => {
   // TTI 측정 훅 사용
-  const { tti, start, stop } = useTTIMeasure();
+  const {tti, start, stop} = useTTIMeasure();
   // 측정 중 상태
   const [measuring, setMeasuring] = useState(false);
   // 에러 상태
@@ -14,12 +23,10 @@ const BasicTTIMeasure = () => {
     try {
       setMeasuring(true);
       start();
-      // 랜덤 지연 시간(500~800ms) 동안 블로킹 시뮬레이션
-      const delay = Math.random() * 300 + 500;
-      const startTime = performance.now();
-      while (performance.now() - startTime < delay) {
-        // 빈 루프로 JS 스레드 블로킹
-      }
+
+      // 지연 시뮬레이션 함수 호출 (try/catch 내부에서 조건문 제거)
+      simulateDelay();
+
       stop();
       setMeasuring(false);
     } catch (err) {
@@ -34,7 +41,9 @@ const BasicTTIMeasure = () => {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorTitle}>오류가 발생했습니다</Text>
-        <Text style={styles.errorMessage}>TTI 측정 중 문제가 발생했습니다.</Text>
+        <Text style={styles.errorMessage}>
+          TTI 측정 중 문제가 발생했습니다.
+        </Text>
       </View>
     );
   }
@@ -47,21 +56,22 @@ const BasicTTIMeasure = () => {
       </Text>
       <View style={styles.buttonRow}>
         <Pressable
-          style={({ pressed }) => [
+          style={({pressed}) => [
             styles.button,
             measuring && styles.buttonDisabled,
             pressed && styles.buttonPressed,
           ]}
           onPress={handlePress}
-          android_ripple={{ color: '#ccc' }}
-          disabled={measuring}
-        >
+          android_ripple={{color: '#ccc'}}
+          disabled={measuring}>
           <Text style={styles.buttonLabel}>
             {measuring ? '실행 중...' : '랜덤 JS 작업 실행'}
           </Text>
         </Pressable>
       </View>
-      {tti !== null && <Text style={styles.result}>TTI: {tti.toFixed(1)} ms</Text>}
+      {tti !== null && (
+        <Text style={styles.result}>TTI: {tti.toFixed(1)} ms</Text>
+      )}
     </>
   );
 };
@@ -130,4 +140,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BasicTTIMeasure; 
+export default BasicTTIMeasure;
