@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,6 +7,7 @@ import {
   InteractionManager,
   ActivityIndicator,
 } from 'react-native';
+import {useTTIMeasure} from 'react-native-jank-tracker';
 
 /**
  * InteractionManager를 활용한 고급 TTI 측정 컴포넌트
@@ -15,12 +16,10 @@ import {
  * - 인터랙션 완료 시점과 시작 시점의 차이로 TTI 계산
  */
 const AdvancedTTIMeasure = () => {
-  // 측정된 TTI 값 (null이면 아직 측정되지 않음)
-  const [tti, setTTI] = useState<number | null>(null);
+  // useTTIMeasure 훅 사용
+  const {tti, start, stop} = useTTIMeasure();
   // 측정 중 상태
   const [measuring, setMeasuring] = useState(false);
-  // 인터랙션 시작 시간 저장
-  const startTimeRef = useRef<number | null>(null);
   // 에러 상태
   const [error, setError] = useState<string | null>(null);
 
@@ -32,11 +31,10 @@ const AdvancedTTIMeasure = () => {
     try {
       // 측정 시작
       setMeasuring(true);
-      setTTI(null);
       setError(null);
 
-      // 현재 시간 기록
-      startTimeRef.current = performance.now();
+      // useTTIMeasure의 start 함수 사용하여 측정 시작
+      start();
 
       // 인위적으로 1초간 JS 쓰레드 블로킹
       simulateHeavyTask(1000);
@@ -44,16 +42,8 @@ const AdvancedTTIMeasure = () => {
       // JS 쓰레드가 한가해질 때까지 기다림
       InteractionManager.runAfterInteractions(() => {
         try {
-          if (startTimeRef.current === null) {
-            return;
-          }
-
-          // TTI 계산: 인터랙션 완료 시점 - 인터랙션 시작 시점
-          const endTime = performance.now();
-          const calculatedTTI = endTime - startTimeRef.current;
-
-          setTTI(calculatedTTI);
-          startTimeRef.current = null;
+          // useTTIMeasure의 stop 함수 사용하여 측정 종료
+          stop();
           setMeasuring(false);
         } catch (err) {
           setError('인터랙션 완료 시점 측정 중 오류 발생');
