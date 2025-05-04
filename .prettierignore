@@ -1,0 +1,17 @@
+# 빌드 결과물
+dist/
+build/
+ios/build/
+android/app/build/
+
+# 의존성
+node_modules/
+
+# 번들링 결과물
+*.bundle.js
+*.jsbundle
+
+# 기타 무시할 파일
+.git/
+.expo/
+coverage/ 

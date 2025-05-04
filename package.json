@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "directories": {
     "example": "example",
     "test": "test"
@@ -16,7 +18,9 @@
     "android:example": "yarn build:example && cd example && yarn android",
     "example": "cd example && npx react-native run-ios",
     "e2e": "detox test",
-    "start": "cd example && yarn start"
+    "start": "cd example && yarn start",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json}\"",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "repository": {
     "type": "git",
@@ -41,6 +45,7 @@
     "@types/react": "^18.0.0",
     "babel-jest": "^29.7.0",
     "detox": "^20.0.0",
+    "eslint-plugin-prettier": "^5.3.1",
     "jest": "^29.0.0",
     "jest-environment-jsdom": "^29.7.0",
     "metro-react-native-babel-preset": "^0.77.0",
