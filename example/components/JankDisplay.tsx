@@ -1,18 +1,11 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {useContextSelector} from 'use-context-selector';
-import {
-  JankContext,
-  JankContextValue,
-} from 'react-native-jank-tracker/JankContext'; // Adjust path if needed
+import {JankContext} from '../../src/JankContext';
 
 const JankDisplay = () => {
-  // JankContext에서 lastJank 값만 선택하여 가져옵니다.
-  // 이렇게 하면 lastJank가 변경될 때만 리렌더링됩니다.
-  const lastJank = useContextSelector(
-    JankContext,
-    (context: JankContextValue | undefined) => context?.lastJank,
-  );
+  // 표준 useContext 사용
+  const context = useContext(JankContext);
+  const lastJank = context?.lastJank; // context에서 직접 lastJank 가져오기
 
   return (
     <View style={styles.container}>

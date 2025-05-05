@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import JankTrackerProvider from 'react-native-jank-tracker/JankTrackerProvider';
 import JankDisplay from './components/JankDisplay';
+import FrameGraph from './components/FrameGraph';
 
 // TTI 측정 예제 컴포넌트들
 import BasicTTIMeasure from './components/BasicTTIMeasure';
@@ -47,6 +48,7 @@ const App = () => {
           <Text style={styles.header}>React Native Jank Tracker</Text>
 
           <JankDisplay />
+          <FrameGraph />
 
           <TouchableOpacity
             style={styles.simulateButton}

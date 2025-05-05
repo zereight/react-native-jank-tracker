@@ -1,4 +1,4 @@
-import { createContext } from 'use-context-selector';
+import { createContext } from 'react';
 
 export interface JankEvent {
   timestamp: number;
@@ -8,6 +8,7 @@ export interface JankEvent {
 export interface JankContextValue {
   lastJank: JankEvent | null;
   setLastJank: (event: JankEvent) => void;
+  deltaHistory: number[];
 }
 
 export const JankContext = createContext<JankContextValue | undefined>(undefined);
