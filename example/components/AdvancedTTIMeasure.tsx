@@ -7,7 +7,7 @@ import {
   InteractionManager,
   ActivityIndicator,
 } from 'react-native';
-import {useTTIMeasure} from 'react-native-jank-tracker';
+import {useTTIMeasure} from 'react-native-jank-tracker/useTTIMeasure';
 
 /**
  * InteractionManager를 활용한 고급 TTI 측정 컴포넌트

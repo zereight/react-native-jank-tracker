@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {StyleSheet, Text, Pressable, View} from 'react-native';
-import {useTTIMeasure} from 'react-native-jank-tracker';
+import {useTTIMeasure} from 'react-native-jank-tracker/useTTIMeasure';
 
 // 랜덤 지연을 시뮬레이션하는 함수를 분리
 const simulateDelay = () => {
