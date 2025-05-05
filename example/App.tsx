@@ -15,6 +15,7 @@ import {
   ScrollView,
 } from 'react-native';
 import JankTrackerProvider from 'react-native-jank-tracker/JankTrackerProvider';
+import JankDisplay from './components/JankDisplay';
 
 // TTI 측정 예제 컴포넌트들
 import BasicTTIMeasure from './components/BasicTTIMeasure';
@@ -22,6 +23,15 @@ import AdvancedTTIMeasure from './components/AdvancedTTIMeasure';
 
 // 탭 타입
 type TabName = 'basic' | 'advanced';
+
+// Jank 시뮬레이션 함수
+const simulateJank = (durationMs = 2000) => {
+  const startTime = performance.now();
+  while (performance.now() - startTime < durationMs) {
+    // JS 스레드 블로킹
+  }
+  console.log(`Simulated jank for ${durationMs}ms`);
+};
 
 const App = () => {
   // 활성화된 탭
@@ -35,6 +45,16 @@ const App = () => {
       <SafeAreaView style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <Text style={styles.header}>React Native Jank Tracker</Text>
+
+          <JankDisplay />
+
+          <TouchableOpacity
+            style={styles.simulateButton}
+            onPress={() => simulateJank(200)}>
+            <Text style={styles.simulateButtonText}>
+              Jank 시뮬레이션 (200ms)
+            </Text>
+          </TouchableOpacity>
 
           {/* 탭 전환 UI */}
           <View style={styles.tabContainer}>
@@ -91,6 +111,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
     color: '#333',
+  },
+  simulateButton: {
+    backgroundColor: '#ff9800',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    alignSelf: 'center',
+    marginBottom: 15,
+  },
+  simulateButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
   tabContainer: {
     flexDirection: 'row',
