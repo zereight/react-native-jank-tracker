@@ -2,21 +2,21 @@ import React, {useState} from 'react';
 import {StyleSheet, Text, Pressable, View} from 'react-native';
 import {useTTIMeasure} from 'react-native-jank-tracker/useTTIMeasure';
 
-// 랜덤 지연을 시뮬레이션하는 함수를 분리
+// Function to simulate random delay
 const simulateDelay = () => {
   const delay = Math.random() * 300 + 500;
   const startTime = performance.now();
   while (performance.now() - startTime < delay) {
-    // 빈 루프로 JS 스레드 블로킹
+    // Empty loop to block JS thread
   }
 };
 
 const BasicTTIMeasure = () => {
-  // TTI 측정 훅 사용
+  // Using TTI measurement hook
   const {tti, start, stop} = useTTIMeasure();
-  // 측정 중 상태
+  // Measurement state
   const [measuring, setMeasuring] = useState(false);
-  // 에러 상태
+  // Error state
   const [error, setError] = useState<Error | null>(null);
 
   const handlePress = () => {
@@ -24,7 +24,7 @@ const BasicTTIMeasure = () => {
       setMeasuring(true);
       start();
 
-      // 지연 시뮬레이션 함수 호출 (try/catch 내부에서 조건문 제거)
+      // Call delay simulation function
       simulateDelay();
 
       stop();
@@ -36,23 +36,22 @@ const BasicTTIMeasure = () => {
     }
   };
 
-  // 에러가 발생했으면 에러 UI 표시
+  // Display error UI if an error occurred
   if (error) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorTitle}>오류가 발생했습니다</Text>
-        <Text style={styles.errorMessage}>
-          TTI 측정 중 문제가 발생했습니다.
-        </Text>
+        <Text style={styles.errorTitle}>An Error Occurred</Text>
+        <Text style={styles.errorMessage}>Error while measuring TTI.</Text>
       </View>
     );
   }
 
   return (
     <>
-      <Text style={styles.title}>기본 TTI 측정</Text>
+      <Text style={styles.title}>Basic TTI Measurement</Text>
       <Text style={styles.description}>
-        start()와 stop() 함수를 직접 호출하여 간단하게 TTI를 측정합니다.
+        Directly calls start() and stop() functions to measure Time To
+        Interactive (TTI).
       </Text>
       <View style={styles.buttonRow}>
         <Pressable
@@ -65,12 +64,18 @@ const BasicTTIMeasure = () => {
           android_ripple={{color: '#ccc'}}
           disabled={measuring}>
           <Text style={styles.buttonLabel}>
-            {measuring ? '실행 중...' : '랜덤 JS 작업 실행'}
+            {measuring ? 'Running...' : 'Run Random JS Task'}
           </Text>
         </Pressable>
       </View>
       {tti !== null && (
-        <Text style={styles.result}>TTI: {tti.toFixed(1)} ms</Text>
+        <View style={styles.resultContainer}>
+          <Text style={styles.result}>TTI: {tti.toFixed(1)} ms</Text>
+          <Text style={styles.resultDescription}>
+            This represents the time it took from the start of the operation to
+            its completion.
+          </Text>
+        </View>
       )}
     </>
   );
@@ -115,10 +120,22 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
   },
+  resultContainer: {
+    marginTop: 20,
+    backgroundColor: '#f0f9ff',
+    borderRadius: 8,
+    padding: 16,
+    alignItems: 'center',
+  },
   result: {
-    fontSize: 20,
-    color: '#007AFF',
-    marginTop: 10,
+    fontSize: 22,
+    color: '#0369a1',
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  resultDescription: {
+    fontSize: 14,
+    color: '#666',
     textAlign: 'center',
   },
   errorContainer: {

@@ -2,52 +2,52 @@ import { useRef, useState, useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 
 /**
- * useTTIMeasure 훅
- * TTI(Time to Interactive)를 측정하기 위한 커스텀 훅입니다.
- * 기본적으로 InteractionManager를 활용한 고급 측정 방식을 사용합니다.
+ * useTTIMeasure Hook
+ * A custom hook for measuring TTI (Time to Interactive).
+ * By default, it uses an advanced measurement approach with InteractionManager.
  *
- * @param options - 측정 옵션
- * @param options.useInteractionManager - InteractionManager 사용 여부 (기본값: true)
- * @returns 측정 관련 함수와 측정값
+ * @param options - Measurement options
+ * @param options.useInteractionManager - Whether to use InteractionManager (default: true)
+ * @returns Measurement functions and values
  */
 export function useTTIMeasure(options = { useInteractionManager: true }) {
-  // 시작 시각을 저장하는 ref (null이면 측정 대기 상태)
+  // Start timestamp ref (null means waiting for measurement)
   const startTS = useRef<number | null>(null);
-  // 측정된 TTI 값을 저장하는 상태
+  // TTI value state
   const [tti, setTTI] = useState<number | null>(null);
-  // 측정 중 상태를 저장
+  // Measurement in progress state
   const [measuring, setMeasuring] = useState(false);
-  // 취소 핸들러 저장
+  // Cancel handler storage
   const cancelRef = useRef<(() => void) | null>(null);
 
   /**
-   * start: TTI 측정을 시작합니다.
-   * @param nativeTimestamp - (옵션) 네이티브 이벤트 타임스탬프
-   *                          주어지지 않으면 performance.now() 사용
+   * start: Begins TTI measurement.
+   * @param nativeTimestamp - (optional) Native event timestamp
+   *                          Uses performance.now() if not provided
    */
   const start = useCallback((nativeTimestamp?: number) => {
-    // 기존 측정 취소
+    // Cancel existing measurement
     if (cancelRef.current) {
       cancelRef.current();
       cancelRef.current = null;
     }
 
-    // 측정 시작 시점 기록
+    // Record measurement start time
     startTS.current = nativeTimestamp ?? performance.now();
     setMeasuring(true);
     setTTI(null);
   }, []);
 
   /**
-   * stop: TTI 측정을 종료합니다.
-   * 성능 API로 측정된 종료 시점에서 시작 시점을 빼서 TTI 계산
+   * stop: Ends TTI measurement.
+   * Calculates TTI by subtracting start time from end time measured with performance API
    */
   const stop = useCallback(() => {
-    // startTS.current가 유효한 숫자인지 확인
+    // Validate that startTS.current is a valid number
     if (typeof startTS.current === 'number') {
-      // 측정 종료 시점
+      // Measurement end time
       const end = performance.now();
-      // TTI 계산: 종료 시점 - 시작 시점
+      // Calculate TTI: end time - start time
       const delta = end - startTS.current;
       if (Number.isFinite(delta)) {
         setTTI(delta);
@@ -57,7 +57,7 @@ export function useTTIMeasure(options = { useInteractionManager: true }) {
       startTS.current = null;
       setMeasuring(false);
 
-      // 취소 핸들러 초기화
+      // Reset cancel handler
       cancelRef.current = null;
     } else {
       console.warn('[useTTIMeasure] stop() called before start()');
@@ -65,27 +65,27 @@ export function useTTIMeasure(options = { useInteractionManager: true }) {
   }, []);
 
   /**
-   * measure: 태스크를 실행하고 TTI를 측정합니다.
-   * 기본적으로 InteractionManager를 활용합니다.
+   * measure: Executes a task and measures TTI.
+   * Uses InteractionManager by default.
    *
-   * @param task - 측정할 작업 함수
-   * @returns 측정 취소 함수
+   * @param task - Task function to measure
+   * @returns Cancel function
    */
   const measure = useCallback(
     (task: () => void) => {
       start();
 
       try {
-        // 작업 실행
+        // Execute task
         task();
 
         if (options.useInteractionManager) {
-          // InteractionManager를 활용한 측정 종료
+          // End measurement using InteractionManager
           const handle = InteractionManager.runAfterInteractions(() => {
             stop();
           });
 
-          // 취소 핸들러 설정
+          // Set up cancel handler
           cancelRef.current = () => {
             if (handle && handle.cancel) {
               handle.cancel();
@@ -95,7 +95,7 @@ export function useTTIMeasure(options = { useInteractionManager: true }) {
 
           return cancelRef.current;
         } else {
-          // 즉시 측정 종료 (기본 방식)
+          // End measurement immediately (basic approach)
           stop();
           return () => {};
         }
@@ -109,7 +109,7 @@ export function useTTIMeasure(options = { useInteractionManager: true }) {
   );
 
   /**
-   * 측정 취소 함수
+   * Cancellation function
    */
   const cancel = useCallback(() => {
     if (cancelRef.current) {
@@ -121,7 +121,7 @@ export function useTTIMeasure(options = { useInteractionManager: true }) {
     startTS.current = null;
   }, []);
 
-  // 측정 결과와 제어 함수 반환
+  // Return measurement results and control functions
   return {
     tti,
     measuring,

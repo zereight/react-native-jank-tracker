@@ -1,8 +1,7 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
+ * React Native Jank Tracker Example
  *
- * @format
+ * GIF for README: Each tab shows only one feature, with clear title and description.
  */
 
 import React, {useState} from 'react';
@@ -13,85 +12,145 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
+  StatusBar,
 } from 'react-native';
 import JankTrackerProvider from 'react-native-jank-tracker/JankTrackerProvider';
 import JankDisplay from './components/JankDisplay';
 import FrameGraph from './components/FrameGraph';
-
-// TTI 측정 예제 컴포넌트들
 import BasicTTIMeasure from './components/BasicTTIMeasure';
 import AdvancedTTIMeasure from './components/AdvancedTTIMeasure';
 
-// 탭 타입
-type TabName = 'basic' | 'advanced';
+// Tab types
+const TABS = [
+  {key: 'frame-graph', label: 'Frame Graph'},
+  {key: 'jank-detector', label: 'Jank Detector'},
+  {key: 'jank-simulation', label: 'Jank Simulation'},
+  {key: 'basic-tti', label: 'Basic TTI'},
+  {key: 'advanced-tti', label: 'Advanced TTI'},
+];
 
-// Jank 시뮬레이션 함수
-const simulateJank = (durationMs = 2000) => {
+type TabKey = (typeof TABS)[number]['key'];
+
+// Jank simulation function
+const simulateJank = (durationMs = 100) => {
   const startTime = performance.now();
   while (performance.now() - startTime < durationMs) {
-    // JS 스레드 블로킹
+    // JS thread blocking
   }
   console.log(`Simulated jank for ${durationMs}ms`);
 };
 
 const App = () => {
-  // 활성화된 탭
-  const [activeTab, setActiveTab] = useState<TabName>('basic');
+  const [activeTab, setActiveTab] = useState<TabKey>('frame-graph');
 
-  // 탭 전환 핸들러
-  const switchTab = (tab: TabName) => setActiveTab(tab);
+  // 각 탭별 렌더링 함수
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'frame-graph':
+        return (
+          <View style={styles.centeredContent}>
+            <Text style={styles.tabTitle}>Frame Graph</Text>
+            <Text style={styles.tabDesc}>
+              Visualize frame interval trends in real time.
+            </Text>
+            <FrameGraph />
+          </View>
+        );
+      case 'jank-detector':
+        return (
+          <View style={styles.centeredContent}>
+            <Text style={styles.tabTitle}>Jank Detector</Text>
+            <Text style={styles.tabDesc}>
+              Shows the last detected jank event and its details.
+            </Text>
+            <JankDisplay />
+          </View>
+        );
+      case 'jank-simulation':
+        return (
+          <View style={styles.centeredContent}>
+            <Text style={styles.tabTitle}>Jank Simulation</Text>
+            <Text style={styles.tabDesc}>
+              Simulate different levels of JS thread blocking.
+            </Text>
+            <View style={styles.simButtonCol}>
+              <TouchableOpacity
+                style={[styles.simButton, styles.lightJankButton]}
+                onPress={() => simulateJank(100)}>
+                <Text style={styles.simButtonText}>
+                  Simulate Light Jank (100ms)
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.simButton, styles.mediumJankButton]}
+                onPress={() => simulateJank(500)}>
+                <Text style={styles.simButtonText}>
+                  Simulate Medium Jank (500ms)
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.simButton, styles.heavyJankButton]}
+                onPress={() => simulateJank(2000)}>
+                <Text style={styles.simButtonText}>
+                  Simulate Heavy Jank (2000ms)
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        );
+      case 'basic-tti':
+        return (
+          <View style={styles.centeredContent}>
+            <Text style={styles.tabTitle}>Basic TTI Measurement</Text>
+            <Text style={styles.tabDesc}>
+              Measure Time To Interactive (TTI) using a simple start/stop
+              approach.
+            </Text>
+            <BasicTTIMeasure />
+          </View>
+        );
+      case 'advanced-tti':
+        return (
+          <View style={styles.centeredContent}>
+            <Text style={styles.tabTitle}>Advanced TTI Measurement</Text>
+            <Text style={styles.tabDesc}>
+              Measure TTI using InteractionManager for more accurate results.
+            </Text>
+            <AdvancedTTIMeasure />
+          </View>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <JankTrackerProvider>
+      <StatusBar barStyle="dark-content" backgroundColor="#f5f5f5" />
       <SafeAreaView style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <Text style={styles.header}>React Native Jank Tracker</Text>
-
-          <JankDisplay />
-          <FrameGraph />
-
-          <TouchableOpacity
-            style={styles.simulateButton}
-            onPress={() => simulateJank(200)}>
-            <Text style={styles.simulateButtonText}>
-              Jank 시뮬레이션 (200ms)
-            </Text>
-          </TouchableOpacity>
-
-          {/* 탭 전환 UI */}
-          <View style={styles.tabContainer}>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>React Native Jank Tracker</Text>
+        </View>
+        <View style={styles.tabBar}>
+          {TABS.map(tab => (
             <TouchableOpacity
-              style={[styles.tab, activeTab === 'basic' && styles.activeTab]}
-              onPress={() => switchTab('basic')}>
+              key={tab.key}
+              style={[styles.tab, activeTab === tab.key && styles.activeTab]}
+              onPress={() => setActiveTab(tab.key as TabKey)}>
               <Text
                 style={[
                   styles.tabText,
-                  activeTab === 'basic' && styles.activeTabText,
+                  activeTab === tab.key && styles.activeTabText,
                 ]}>
-                기본 측정
+                {tab.label}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.tab, activeTab === 'advanced' && styles.activeTab]}
-              onPress={() => switchTab('advanced')}>
-              <Text
-                style={[
-                  styles.tabText,
-                  activeTab === 'advanced' && styles.activeTabText,
-                ]}>
-                고급 측정
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* 선택된 탭에 따라 예제 표시 */}
-          <View style={styles.exampleContainer}>
-            {activeTab === 'basic' ? (
-              <BasicTTIMeasure />
-            ) : (
-              <AdvancedTTIMeasure />
-            )}
-          </View>
+          ))}
+        </View>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}>
+          {renderTabContent()}
         </ScrollView>
       </SafeAreaView>
     </JankTrackerProvider>
@@ -103,70 +162,98 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
-  scrollContainer: {
-    paddingVertical: 20,
-    paddingHorizontal: 16,
-  },
   header: {
-    fontSize: 28,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    backgroundColor: '#2563EB',
+  },
+  headerText: {
+    fontSize: 20,
     fontWeight: 'bold',
+    color: '#FFF',
     textAlign: 'center',
-    marginBottom: 20,
-    color: '#333',
   },
-  simulateButton: {
-    backgroundColor: '#ff9800',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 8,
-    alignSelf: 'center',
-    marginBottom: 15,
-  },
-  simulateButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  tabContainer: {
+  tabBar: {
     flexDirection: 'row',
-    marginBottom: 16,
-    borderRadius: 8,
-    backgroundColor: '#e0e0e0',
-    padding: 4,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e1e1e1',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
   tab: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 14,
     alignItems: 'center',
-    borderRadius: 6,
   },
   activeTab: {
-    backgroundColor: '#fff',
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-    elevation: 1,
+    borderBottomWidth: 3,
+    borderBottomColor: '#2563EB',
   },
   tabText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
     color: '#666',
   },
   activeTabText: {
-    color: '#000',
+    color: '#2563EB',
     fontWeight: '600',
   },
-  exampleContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
     padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  },
+  centeredContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 24,
+    marginBottom: 24,
+  },
+  tabTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 8,
+    color: '#222',
+    textAlign: 'center',
+  },
+  tabDesc: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 18,
+    textAlign: 'center',
+    maxWidth: 320,
+  },
+  simButtonCol: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  simButton: {
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    marginBottom: 14,
+    alignItems: 'center',
+    width: 260,
+  },
+  lightJankButton: {
+    backgroundColor: '#dbeafe',
+  },
+  mediumJankButton: {
+    backgroundColor: '#fef3c7',
+  },
+  heavyJankButton: {
+    backgroundColor: '#fee2e2',
+  },
+  simButtonText: {
+    fontWeight: '500',
+    fontSize: 15,
+    color: '#222',
   },
 });
 

@@ -4,51 +4,51 @@ import {LineChart} from 'react-native-chart-kit';
 import {JankContext} from '../../src/JankContext';
 
 const screenWidth = Dimensions.get('window').width;
-const TARGET_FPS_MS = 1000 / 60; // 60 FPS 기준 ms (약 16.7ms)
+const TARGET_FPS_MS = 1000 / 60; // 60 FPS target in ms (approx. 16.7ms)
 
 const FrameGraph = () => {
   const context = useContext(JankContext);
   const deltaHistory = context?.deltaHistory ?? [];
 
-  // 차트에 표시할 데이터 준비 (최소 1개의 데이터 필요)
+  // Prepare data for chart display (minimum 1 data point needed)
   const chartData = {
-    labels: [], // 라벨 숨김
+    labels: [], // Hide labels
     datasets: [
       {
-        data: deltaHistory.length > 0 ? deltaHistory : [0], // 데이터가 없으면 0 표시
+        data: deltaHistory.length > 0 ? deltaHistory : [0], // Show 0 if no data
         color: (opacity = 1) => `rgba(0, 122, 255, ${opacity})`, // iOS Blue
         strokeWidth: 2,
       },
       {
-        // 60 FPS 기준선 (점선으로 표시)
+        // 60 FPS target line (shown as dashed)
         data: Array(deltaHistory.length || 1).fill(TARGET_FPS_MS),
-        color: (opacity = 1) => `rgba(255, 59, 48, ${opacity * 0.5})`, // iOS Red (반투명)
+        color: (opacity = 1) => `rgba(255, 59, 48, ${opacity * 0.5})`, // iOS Red (semi-transparent)
         strokeWidth: 1,
-        props: {strokeDasharray: [4, 4]}, // 점선 효과
+        props: {strokeDasharray: [4, 4]}, // Dashed line effect
       },
     ],
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>프레임 간격(ms) 추이</Text>
+      <Text style={styles.title}>Frame Interval (ms) Trend</Text>
       {deltaHistory.length > 0 ? (
         <LineChart
           data={chartData}
-          width={screenWidth - 32} // 좌우 패딩 고려
+          width={screenWidth - 32} // Account for padding
           height={180}
-          withDots={false} // 점 숨김
-          withInnerLines={false} // 내부 격자선 숨김
+          withDots={false} // Hide dots
+          withInnerLines={false} // Hide inner grid lines
           withOuterLines={true}
-          withHorizontalLabels={true} // 세로축 라벨 표시
-          withVerticalLabels={false} // 가로축 라벨 숨김
-          yAxisInterval={1} // 세로축 간격 (필요 시 조정)
+          withHorizontalLabels={true} // Show vertical axis labels
+          withVerticalLabels={false} // Hide horizontal axis labels
+          yAxisInterval={1} // Vertical axis interval (adjust as needed)
           chartConfig={{
             backgroundColor: '#f0f0f0',
             backgroundGradientFrom: '#f0f0f0',
             backgroundGradientTo: '#f0f0f0',
-            decimalPlaces: 1, // 소수점 1자리
-            color: (opacity = 1) => `rgba(50, 50, 50, ${opacity})`, // 라벨 색상
+            decimalPlaces: 1, // 1 decimal place
+            color: (opacity = 1) => `rgba(50, 50, 50, ${opacity})`, // Label color
             labelColor: (opacity = 1) => `rgba(100, 100, 100, ${opacity})`,
             style: {
               borderRadius: 8,
@@ -59,10 +59,10 @@ const FrameGraph = () => {
             },
           }}
           style={styles.chart}
-          bezier // 곡선 그래프
+          bezier // Curved graph
         />
       ) : (
-        <Text style={styles.loadingText}>데이터 수집 중...</Text>
+        <Text style={styles.loadingText}>Collecting data...</Text>
       )}
     </View>
   );

@@ -10,17 +10,17 @@ import {
 import {useTTIMeasure} from 'react-native-jank-tracker/useTTIMeasure';
 
 /**
- * InteractionManager를 활용한 고급 TTI 측정 컴포넌트
- * - 인터랙션 시작 시 타임스탬프를 기록
- * - InteractionManager.runAfterInteractions()를 통해 JS 스레드가 한가해질 때까지 대기
- * - 인터랙션 완료 시점과 시작 시점의 차이로 TTI 계산
+ * Advanced TTI measurement component using InteractionManager
+ * - Records timestamp at interaction start
+ * - Uses InteractionManager.runAfterInteractions() to wait until the JS thread is idle
+ * - Calculates TTI based on the difference between completion and start time
  */
 const AdvancedTTIMeasure = () => {
-  // useTTIMeasure 훅 사용
+  // Using the useTTIMeasure hook
   const {tti, start, stop} = useTTIMeasure();
-  // 측정 중 상태
+  // Measurement state
   const [measuring, setMeasuring] = useState(false);
-  // 에러 상태
+  // Error state
   const [error, setError] = useState<string | null>(null);
 
   const handlePress = () => {
@@ -29,50 +29,50 @@ const AdvancedTTIMeasure = () => {
     }
 
     try {
-      // 측정 시작
+      // Start measurement
       setMeasuring(true);
       setError(null);
 
-      // useTTIMeasure의 start 함수 사용하여 측정 시작
+      // Use start function from useTTIMeasure to begin measurement
       start();
 
-      // 인위적으로 1초간 JS 쓰레드 블로킹
+      // Artificially block JS thread for 1 second
       simulateHeavyTask(1000);
 
-      // JS 쓰레드가 한가해질 때까지 기다림
+      // Wait until JS thread is idle
       InteractionManager.runAfterInteractions(() => {
         try {
-          // useTTIMeasure의 stop 함수 사용하여 측정 종료
+          // Use stop function from useTTIMeasure to end measurement
           stop();
           setMeasuring(false);
         } catch (err) {
-          setError('인터랙션 완료 시점 측정 중 오류 발생');
+          setError('Error measuring interaction completion time');
           setMeasuring(false);
         }
       });
     } catch (err) {
-      setError('측정 중 오류 발생');
+      setError('Error during measurement');
       setMeasuring(false);
     }
   };
 
   /**
-   * 인위적인 작업 지연 시뮬레이션 (JS 쓰레드 블로킹)
+   * Simulate heavy task delay (blocks JS thread)
    */
   const simulateHeavyTask = (duration: number) => {
     const taskStartTime = performance.now();
     while (performance.now() - taskStartTime < duration) {
-      // 비어있는 루프로 JS 쓰레드 블로킹
+      // Empty loop to block JS thread
     }
   };
 
   return (
     <>
-      <Text style={styles.title}>고급 TTI 측정</Text>
+      <Text style={styles.title}>Advanced TTI Measurement</Text>
       <Text style={styles.description}>
-        InteractionManager를 활용하여 JS 스레드가 한가해지는 시점까지
-        측정합니다. 이는 실제 앱에서 사용자 인터랙션 후 UI가 완전히 응답할 수
-        있을 때까지 걸리는 시간을 더 정확하게 측정합니다.
+        Uses InteractionManager to measure the time until the JS thread becomes
+        idle. This provides a more accurate measurement of when the UI is fully
+        responsive after a user interaction.
       </Text>
 
       <TouchableOpacity
@@ -81,7 +81,7 @@ const AdvancedTTIMeasure = () => {
         disabled={measuring}
         activeOpacity={0.7}>
         <Text style={styles.buttonLabel}>
-          {measuring ? '측정 중...' : 'InteractionManager 측정 시작'}
+          {measuring ? 'Measuring...' : 'Start InteractionManager Measurement'}
         </Text>
       </TouchableOpacity>
 
@@ -89,7 +89,7 @@ const AdvancedTTIMeasure = () => {
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" color="#2563EB" />
           <Text style={styles.loadingText}>
-            JS 스레드가 한가해질 때까지 대기 중...
+            Waiting for JS thread to become idle...
           </Text>
         </View>
       )}
@@ -104,7 +104,7 @@ const AdvancedTTIMeasure = () => {
         <View style={styles.resultContainer}>
           <Text style={styles.result}>TTI: {tti.toFixed(1)} ms</Text>
           <Text style={styles.explanation}>
-            (JS 스레드가 완전히 한가해질 때까지의 시간)
+            (Time until the JS thread became completely idle)
           </Text>
         </View>
       )}
@@ -157,11 +157,14 @@ const styles = StyleSheet.create({
   resultContainer: {
     marginTop: 20,
     alignItems: 'center',
+    backgroundColor: '#f0f9f5',
+    borderRadius: 8,
+    padding: 16,
   },
   result: {
-    fontSize: 20,
+    fontSize: 22,
     color: '#10B981',
-    fontWeight: '500',
+    fontWeight: '700',
   },
   explanation: {
     fontSize: 12,
