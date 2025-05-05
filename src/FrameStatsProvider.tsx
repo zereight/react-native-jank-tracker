@@ -7,7 +7,7 @@ export function isJank(delta: number): boolean {
   return delta > 17;
 }
 
-const JankTrackerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const FrameStatsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [lastJank, setLastJank] = React.useState<JankEvent | null>(null);
   const [deltaHistory, setDeltaHistory] = React.useState<number[]>([]);
   const lastTs = React.useRef<number>(Date.now());
@@ -48,4 +48,4 @@ const JankTrackerProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return <JankContext.Provider value={contextValue}>{children}</JankContext.Provider>;
 };
 
-export default JankTrackerProvider;
+export default FrameStatsProvider;

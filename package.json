@@ -15,9 +15,9 @@
       "types": "./dist/JankContext.d.ts",
       "default": "./dist/JankContext.js"
     },
-    "./JankTrackerProvider": {
-      "types": "./dist/JankTrackerProvider.d.ts",
-      "default": "./dist/JankTrackerProvider.js"
+    "./FrameStatsProvider": {
+      "types": "./dist/FrameStatsProvider.d.ts",
+      "default": "./dist/FrameStatsProvider.js"
     },
     "./measureTTI": {
       "types": "./dist/measureTTI.d.ts",

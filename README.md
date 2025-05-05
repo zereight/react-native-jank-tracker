@@ -12,7 +12,7 @@ A lightweight library for tracking, visualizing, and simulating UI jank (frame d
 
 ## Features
 
-- **Jank Detection**: Detects and displays UI jank events in real time.
+- **Jank & FPS Detection**: Detects and displays UI jank events and frame intervals (FPS) in real time.
 - **Frame Graph**: Visualizes frame interval trends.
 - **Jank Simulation**: Simulate various levels of JS thread blocking.
 - **TTI Measurement**: Measure Time To Interactive (TTI) using InteractionManager for realistic results.
@@ -35,10 +35,12 @@ npm install react-native-jank-tracker
 1. **Wrap your app with the provider (required for jank/frame context):**
 
 ```tsx
-import JankTrackerProvider from 'react-native-jank-tracker/JankTrackerProvider';
+import FrameStatsProvider from 'react-native-jank-tracker/FrameStatsProvider';
 
-const App = () => <JankTrackerProvider>{/* ...your app... */}</JankTrackerProvider>;
+const App = () => <FrameStatsProvider>{/* ...your app... */}</FrameStatsProvider>;
 ```
+
+- `FrameStatsProvider` tracks frame intervals (FPS) and jank (frame drops) in real time, and provides this data via context.
 
 2. **Measure TTI for a task:**
 
@@ -53,15 +55,15 @@ async function handleTTI() {
 }
 ```
 
-> **Note:** `measureTTI` does **not** require the Provider. However, if you want to use jank/frame context (`JankContext`), you must wrap your app with `JankTrackerProvider`.
+> **Note:** `measureTTI` does **not** require the Provider. However, if you want to use jank/frame context (`JankContext`), you must wrap your app with `FrameStatsProvider`.
 
 ---
 
 ## API
 
-### `JankTrackerProvider`
+### `FrameStatsProvider`
 
-Wraps your app and provides jank/frame data via context. Required if you want to use `JankContext` or visualize frame/jank data globally.
+Wraps your app and provides frame interval (FPS) and jank (frame drop) data via context. Required if you want to use `JankContext` or visualize frame/jank data globally.
 
 ### `measureTTI(task)`
 
@@ -98,7 +100,7 @@ Access frame/jank data anywhere in your app (requires Provider).
 
 A full-featured example app is included in the `example/` directory. It demonstrates:
 
-- Real-time jank detection and frame graph
+- Real-time jank and FPS detection and frame graph
 - Jank simulation buttons
 - TTI measurement
 

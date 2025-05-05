@@ -14,7 +14,7 @@ import {
   ScrollView,
   StatusBar,
 } from 'react-native';
-import JankTrackerProvider from 'react-native-jank-tracker/JankTrackerProvider';
+import FrameStatsProvider from 'react-native-jank-tracker/FrameStatsProvider';
 import JankDisplay from './components/JankDisplay';
 import FrameGraph from './components/FrameGraph';
 import TTIMeasure from './components/TTIMeasure';
@@ -100,7 +100,7 @@ const App = () => {
   };
 
   return (
-    <JankTrackerProvider>
+    <FrameStatsProvider>
       <StatusBar barStyle="dark-content" backgroundColor="#f5f5f5" />
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
@@ -128,7 +128,7 @@ const App = () => {
           {renderTabContent()}
         </ScrollView>
       </SafeAreaView>
-    </JankTrackerProvider>
+    </FrameStatsProvider>
   );
 };
 
