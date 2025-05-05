@@ -25,14 +25,12 @@
     }
   },
   "scripts": {
+    "dev": "yarn build && cd example && yarn start",
+    "ios": "yarn build && cd example && yarn ios",
+    "android": "yarn build && cd example && yarn android",
+    "build": "tsc && cp package.json dist/package.json",
     "test": "jest",
-    "build": "tsc && node scripts/copy-dist-package.js",
-    "build:example": "yarn build && cd example && yarn install",
-    "ios:example": "yarn build:example && cd example && yarn ios",
-    "android:example": "yarn build:example && cd example && yarn android",
-    "example": "cd example && npx react-native run-ios",
     "e2e": "detox test",
-    "start": "cd example && yarn start",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json}\"",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },

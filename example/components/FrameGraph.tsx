@@ -10,8 +10,6 @@ const FrameGraph = () => {
   const context = useContext(JankContext);
   const deltaHistory = context?.deltaHistory ?? [];
 
-  console.log('deltaHistory.length', deltaHistory.length);
-
   // 차트에 표시할 데이터 준비 (최소 1개의 데이터 필요)
   const chartData = {
     labels: [], // 라벨 숨김

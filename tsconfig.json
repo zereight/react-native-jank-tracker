@@ -11,14 +11,10 @@
     "declaration": true,
     "declarationMap": false,
     "outDir": "./dist",
-    "rootDir": "."
+    "rootDir": "./src",
+    "preserveConstEnums": true,
+    "removeComments": false
   },
-  "include": [
-    "src/**/*",
-    "test/**/*",
-    "example/__tests__/**/*"
-  ],
-  "exclude": [
-    "e2e"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "example", "test", "e2e"]
 }
