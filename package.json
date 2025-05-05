@@ -1,14 +1,28 @@
 {
   "name": "react-native-jank-tracker",
   "version": "1.0.0",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
   "directories": {
     "example": "example",
     "test": "test"
+  },
+  "sideEffects": false,
+  "exports": {
+    "./package.json": "./package.json",
+    "./JankContext": {
+      "types": "./dist/JankContext.d.ts",
+      "default": "./dist/JankContext.js"
+    },
+    "./JankTrackerProvider": {
+      "types": "./dist/JankTrackerProvider.d.ts",
+      "default": "./dist/JankTrackerProvider.js"
+    },
+    "./useTTIMeasure": {
+      "types": "./dist/useTTIMeasure.d.ts",
+      "default": "./dist/useTTIMeasure.js"
+    }
   },
   "scripts": {
     "test": "jest",

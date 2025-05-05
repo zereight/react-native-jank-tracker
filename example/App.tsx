@@ -14,7 +14,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import {JankTrackerProvider} from 'react-native-jank-tracker';
+import JankTrackerProvider from 'react-native-jank-tracker/JankTrackerProvider';
 
 // TTI 측정 예제 컴포넌트들
 import BasicTTIMeasure from './components/BasicTTIMeasure';
