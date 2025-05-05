@@ -20,6 +20,74 @@ A lightweight library for tracking, visualizing, and simulating UI jank (frame d
 
 ---
 
+## How it works / Architecture
+
+### FrameStatsProvider (FPS & Jank Detection)
+
+**Core Principle:**
+
+- Uses React Context API to provide real-time frame interval (FPS) and jank (frame drop) information throughout the app.
+- Internally leverages `requestAnimationFrame` to measure frame intervals (Δt).
+- If Δt exceeds 17ms (i.e., below 60FPS), it is considered a jank event and recorded.
+- Provides recent frame interval history and the last jank event via context.
+
+**Sequence Diagram (Mermaid):**
+
+```mermaid
+sequenceDiagram
+  participant App
+  participant FrameStatsProvider
+  participant JankContext
+  loop Every Animation Frame
+    FrameStatsProvider->>FrameStatsProvider: requestAnimationFrame(tick)
+    FrameStatsProvider->>FrameStatsProvider: now = Date.now()
+    FrameStatsProvider->>FrameStatsProvider: delta = now - lastTs
+    FrameStatsProvider->>FrameStatsProvider: deltaHistory.push(delta)
+    alt delta > 17ms (Jank)
+      FrameStatsProvider->>FrameStatsProvider: setLastJank({timestamp, delta})
+    end
+    FrameStatsProvider->>JankContext: Provide {lastJank, deltaHistory}
+  end
+  App->>JankContext: useContext(JankContext)
+```
+
+**Conceptual Overview:**
+
+- Wrapping your app with FrameStatsProvider allows any child component to subscribe to frame/jank information via context.
+- The frame interval history enables FPS graphs, jank event displays, and other visualizations.
+
+### measureTTI (Time To Interactive Measurement)
+
+**Core Principle:**
+
+- Executes a given task (function), then waits until the JS/UI thread is completely idle.
+- Measures the elapsed time from task start to idle as the TTI.
+- Uses React Native's `InteractionManager.runAfterInteractions` to detect the idle point.
+- Uses high-resolution timer (`performance.now()`) for accurate measurement.
+
+**Sequence Diagram (Mermaid):**
+
+```mermaid
+sequenceDiagram
+  participant Caller
+  participant measureTTI
+  participant InteractionManager
+  Caller->>measureTTI: measureTTI(task)
+  measureTTI->>measureTTI: start = performance.now()
+  measureTTI->>task: task()
+  measureTTI->>InteractionManager: runAfterInteractions(...)
+  InteractionManager-->>measureTTI: (after all JS/UI work is done)
+  measureTTI->>measureTTI: end = performance.now()
+  measureTTI->>Caller: resolve(end - start)
+```
+
+**Conceptual Overview:**
+
+- `measureTTI` measures "the time from user interaction until the app is fully interactive again."
+- It accurately captures the point when all rendering, animation, and heavy JS work is finished.
+
+---
+
 ## Installation
 
 ```bash
