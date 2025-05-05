@@ -1,7 +1,7 @@
 /**
  * React Native Jank Tracker Example
  *
- * GIF for README: Each tab shows only one feature, with clear title and description.
+ * GIF for README: Jank Simulation 탭에 JankDisplay, FrameGraph, 시뮬레이션 버튼이 모두 포함됩니다.
  */
 
 import React, {useState} from 'react';
@@ -17,16 +17,12 @@ import {
 import JankTrackerProvider from 'react-native-jank-tracker/JankTrackerProvider';
 import JankDisplay from './components/JankDisplay';
 import FrameGraph from './components/FrameGraph';
-import BasicTTIMeasure from './components/BasicTTIMeasure';
-import AdvancedTTIMeasure from './components/AdvancedTTIMeasure';
+import TTIMeasure from './components/TTIMeasure';
 
 // Tab types
 const TABS = [
-  {key: 'frame-graph', label: 'Frame Graph'},
-  {key: 'jank-detector', label: 'Jank Detector'},
   {key: 'jank-simulation', label: 'Jank Simulation'},
-  {key: 'basic-tti', label: 'Basic TTI'},
-  {key: 'advanced-tti', label: 'Advanced TTI'},
+  {key: 'tti', label: 'TTI Measurement'},
 ];
 
 type TabKey = (typeof TABS)[number]['key'];
@@ -41,83 +37,62 @@ const simulateJank = (durationMs = 100) => {
 };
 
 const App = () => {
-  const [activeTab, setActiveTab] = useState<TabKey>('frame-graph');
+  const [activeTab, setActiveTab] = useState<TabKey>('jank-simulation');
 
   // 각 탭별 렌더링 함수
   const renderTabContent = () => {
     switch (activeTab) {
-      case 'frame-graph':
-        return (
-          <View style={styles.centeredContent}>
-            <Text style={styles.tabTitle}>Frame Graph</Text>
-            <Text style={styles.tabDesc}>
-              Visualize frame interval trends in real time.
-            </Text>
-            <FrameGraph />
-          </View>
-        );
-      case 'jank-detector':
-        return (
-          <View style={styles.centeredContent}>
-            <Text style={styles.tabTitle}>Jank Detector</Text>
-            <Text style={styles.tabDesc}>
-              Shows the last detected jank event and its details.
-            </Text>
-            <JankDisplay />
-          </View>
-        );
       case 'jank-simulation':
         return (
-          <View style={styles.centeredContent}>
-            <Text style={styles.tabTitle}>Jank Simulation</Text>
-            <Text style={styles.tabDesc}>
-              Simulate different levels of JS thread blocking.
-            </Text>
-            <View style={styles.simButtonCol}>
-              <TouchableOpacity
-                style={[styles.simButton, styles.lightJankButton]}
-                onPress={() => simulateJank(100)}>
-                <Text style={styles.simButtonText}>
-                  Simulate Light Jank (100ms)
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.simButton, styles.mediumJankButton]}
-                onPress={() => simulateJank(500)}>
-                <Text style={styles.simButtonText}>
-                  Simulate Medium Jank (500ms)
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.simButton, styles.heavyJankButton]}
-                onPress={() => simulateJank(2000)}>
-                <Text style={styles.simButtonText}>
-                  Simulate Heavy Jank (2000ms)
-                </Text>
-              </TouchableOpacity>
+          <>
+            <View style={styles.tabTitleContainer}>
+              <Text style={styles.tabTitle}>Jank Simulation</Text>
+              <Text style={styles.tabDesc}>
+                Simulate different levels of JS thread blocking, and monitor
+                jank events and frame intervals in real time.
+              </Text>
             </View>
-          </View>
+            <View style={styles.centeredContent}>
+              <JankDisplay />
+              <View style={styles.jankChartSpacer} />
+              <FrameGraph />
+              <View style={styles.jankChartSpacer} />
+              <View style={styles.simButtonCol}>
+                <TouchableOpacity
+                  style={[styles.simButton, styles.lightJankButton]}
+                  onPress={() => simulateJank(100)}>
+                  <Text style={styles.simButtonText}>
+                    Simulate Light Jank (100ms)
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.simButton, styles.mediumJankButton]}
+                  onPress={() => simulateJank(500)}>
+                  <Text style={styles.simButtonText}>
+                    Simulate Medium Jank (500ms)
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.simButton, styles.heavyJankButton]}
+                  onPress={() => simulateJank(2000)}>
+                  <Text style={styles.simButtonText}>
+                    Simulate Heavy Jank (2000ms)
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </>
         );
-      case 'basic-tti':
+      case 'tti':
         return (
-          <View style={styles.centeredContent}>
-            <Text style={styles.tabTitle}>Basic TTI Measurement</Text>
-            <Text style={styles.tabDesc}>
-              Measure Time To Interactive (TTI) using a simple start/stop
-              approach.
-            </Text>
-            <BasicTTIMeasure />
-          </View>
-        );
-      case 'advanced-tti':
-        return (
-          <View style={styles.centeredContent}>
-            <Text style={styles.tabTitle}>Advanced TTI Measurement</Text>
-            <Text style={styles.tabDesc}>
-              Measure TTI using InteractionManager for more accurate results.
-            </Text>
-            <AdvancedTTIMeasure />
-          </View>
+          <>
+            <View style={styles.tabTitleContainer}>
+              <Text style={styles.tabTitle}>TTI Measurement</Text>
+            </View>
+            <View style={styles.centeredContent}>
+              <TTIMeasure />
+            </View>
+          </>
         );
       default:
         return null;
@@ -208,11 +183,11 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
   },
-  centeredContent: {
+  tabTitleContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 24,
-    marginBottom: 24,
+    marginBottom: 8,
   },
   tabTitle: {
     fontSize: 22,
@@ -224,9 +199,14 @@ const styles = StyleSheet.create({
   tabDesc: {
     fontSize: 14,
     color: '#666',
-    marginBottom: 18,
+    marginBottom: 0,
     textAlign: 'center',
     maxWidth: 320,
+  },
+  centeredContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
   },
   simButtonCol: {
     width: '100%',
@@ -254,6 +234,9 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 15,
     color: '#222',
+  },
+  jankChartSpacer: {
+    height: 16,
   },
 });
 

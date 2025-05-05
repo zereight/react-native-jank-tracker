@@ -4,75 +4,46 @@ import {
   Text,
   TouchableOpacity,
   View,
-  InteractionManager,
   ActivityIndicator,
 } from 'react-native';
-import {useTTIMeasure} from 'react-native-jank-tracker/useTTIMeasure';
+import {measureTTI} from 'react-native-jank-tracker/measureTTI';
 
 /**
- * Advanced TTI measurement component using InteractionManager
- * - Records timestamp at interaction start
- * - Uses InteractionManager.runAfterInteractions() to wait until the JS thread is idle
- * - Calculates TTI based on the difference between completion and start time
+ * Simulate heavy JS task (blocks thread)
  */
-const AdvancedTTIMeasure = () => {
-  // Using the useTTIMeasure hook
-  const {tti, start, stop} = useTTIMeasure();
-  // Measurement state
+const simulateHeavyTask = (duration: number) => {
+  const taskStartTime = performance.now();
+  while (performance.now() - taskStartTime < duration) {
+    // Empty loop to block JS thread
+  }
+};
+
+const TTIMeasure = () => {
+  const [tti, setTTI] = useState<number | null>(null);
   const [measuring, setMeasuring] = useState(false);
-  // Error state
   const [error, setError] = useState<string | null>(null);
 
-  const handlePress = () => {
-    if (measuring) {
-      return;
-    }
-
+  const handlePress = async () => {
+    setMeasuring(true);
+    setError(null);
+    setTTI(null);
     try {
-      // Start measurement
-      setMeasuring(true);
-      setError(null);
-
-      // Use start function from useTTIMeasure to begin measurement
-      start();
-
-      // Artificially block JS thread for 1 second
-      simulateHeavyTask(1000);
-
-      // Wait until JS thread is idle
-      InteractionManager.runAfterInteractions(() => {
-        try {
-          // Use stop function from useTTIMeasure to end measurement
-          stop();
-          setMeasuring(false);
-        } catch (err) {
-          setError('Error measuring interaction completion time');
-          setMeasuring(false);
-        }
+      const result = await measureTTI(() => {
+        simulateHeavyTask(1000);
       });
+      setTTI(result);
     } catch (err) {
-      setError('Error during measurement');
+      setError('Error while measuring TTI.');
+    } finally {
       setMeasuring(false);
-    }
-  };
-
-  /**
-   * Simulate heavy task delay (blocks JS thread)
-   */
-  const simulateHeavyTask = (duration: number) => {
-    const taskStartTime = performance.now();
-    while (performance.now() - taskStartTime < duration) {
-      // Empty loop to block JS thread
     }
   };
 
   return (
     <>
-      <Text style={styles.title}>Advanced TTI Measurement</Text>
       <Text style={styles.description}>
-        Uses InteractionManager to measure the time until the JS thread becomes
-        idle. This provides a more accurate measurement of when the UI is fully
-        responsive after a user interaction.
+        Measures Time To Interactive (TTI) using InteractionManager after a
+        heavy JS task (1s block).
       </Text>
 
       <TouchableOpacity
@@ -81,7 +52,7 @@ const AdvancedTTIMeasure = () => {
         disabled={measuring}
         activeOpacity={0.7}>
         <Text style={styles.buttonLabel}>
-          {measuring ? 'Measuring...' : 'Start InteractionManager Measurement'}
+          {measuring ? 'Measuring...' : 'Start TTI Measurement'}
         </Text>
       </TouchableOpacity>
 
@@ -184,4 +155,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AdvancedTTIMeasure;
+export default TTIMeasure;

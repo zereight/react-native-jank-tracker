@@ -102,55 +102,36 @@ To learn more about React Native, take a look at the following resources:
 
 ## 포함된 예제
 
-### 1. 기본 TTI 측정 (Basic TTI Measurement)
+### TTI 측정 (TTI Measurement)
 
-`useTTIMeasure` 훅을 사용한 간단한 TTI 측정 예제입니다. 작업 시작과 종료 시점을 수동으로 명시하여 측정합니다.
+`measureTTI` 함수를 사용하여 InteractionManager 기반으로 실제 앱에서의 TTI(Time To Interactive)를 측정하는 예제입니다.
 
 ```jsx
-import { useTTIMeasure } from 'react-native-jank-tracker';
+import {measureTTI} from 'react-native-jank-tracker';
 
-function MyComponent() {
-  const { tti, start, stop } = useTTIMeasure();
-  
-  const handleButtonPress = () => {
-    // 측정 시작
-    start();
-    
-    // 작업 수행
+async function handleTTI() {
+  const tti = await measureTTI(() => {
+    // 작업 수행 (예: 무거운 연산)
     performHeavyTask();
-    
-    // 측정 종료
-    stop();
-    
-    // tti 값에 작업 소요 시간이 밀리초 단위로 저장됨
-    console.log(`작업 소요 시간: ${tti}ms`);
-  };
-  
-  return (
-    <Button onPress={handleButtonPress} title="작업 실행" />
-  );
+  });
+  console.log(`TTI: ${tti}ms`);
 }
 ```
 
-### 2. 고급 TTI 측정 (Advanced TTI Measurement)
-
-`InteractionManager`를 활용한 고급 TTI 측정 예제입니다. 네이티브 이벤트 타임스탬프부터 JS 스레드가 한가해지는 시점까지의 시간을 측정합니다.
+또는 네이티브 이벤트 타임스탬프부터 JS 스레드가 한가해지는 시점까지의 시간을 측정하려면:
 
 ```jsx
-import { InteractionManager, GestureResponderEvent } from 'react-native';
+import {InteractionManager, GestureResponderEvent} from 'react-native';
 
 function handleTouchStart(e: GestureResponderEvent) {
   // 네이티브 이벤트 타임스탬프 저장
   const nativeTS = e.nativeEvent.timestamp;
-  
   // 작업 수행
   performHeavyTask();
-  
   // InteractionManager를 통해 JS 스레드가 한가해질 때까지 대기
   InteractionManager.runAfterInteractions(() => {
     // 인터랙션 완료 시점
     const jsReadyTS = performance.now();
-    
     // TTI 계산
     const tti = jsReadyTS - nativeTS;
     console.log(`TTI: ${tti.toFixed(1)}ms`);
@@ -163,18 +144,15 @@ function handleTouchStart(e: GestureResponderEvent) {
 애플리케이션 전체에서 Jank 이벤트(프레임 드롭)를 실시간으로 모니터링합니다. 화면 하단에 최근 감지된 Jank 정보가 표시됩니다.
 
 ```jsx
-import { JankTrackerProvider, JankContext } from 'react-native-jank-tracker';
-import { useContextSelector } from 'use-context-selector';
+import {JankTrackerProvider, JankContext} from 'react-native-jank-tracker';
+import {useContextSelector} from 'use-context-selector';
 
 function App() {
   const lastJank = useContextSelector(JankContext, v => v?.lastJank);
-  
   return (
     <JankTrackerProvider>
       <YourApp />
-      {lastJank && (
-        <Text>마지막 Jank: {lastJank.delta.toFixed(1)}ms</Text>
-      )}
+      {lastJank && <Text>마지막 Jank: {lastJank.delta.toFixed(1)}ms</Text>}
     </JankTrackerProvider>
   );
 }

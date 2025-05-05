@@ -19,9 +19,9 @@
       "types": "./dist/JankTrackerProvider.d.ts",
       "default": "./dist/JankTrackerProvider.js"
     },
-    "./useTTIMeasure": {
-      "types": "./dist/useTTIMeasure.d.ts",
-      "default": "./dist/useTTIMeasure.js"
+    "./measureTTI": {
+      "types": "./dist/measureTTI.d.ts",
+      "default": "./dist/measureTTI.js"
     }
   },
   "scripts": {

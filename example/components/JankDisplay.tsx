@@ -16,9 +16,6 @@ const JankDisplay = () => {
           <Text style={styles.jankDetail}>
             - Time: {new Date(lastJank.timestamp).toLocaleTimeString()}
           </Text>
-          <Text style={styles.jankDetail}>
-            - Frame Interval: {lastJank.delta.toFixed(1)} ms
-          </Text>
         </View>
       ) : (
         <Text style={styles.noJankText}>No Jank Detected</Text>
