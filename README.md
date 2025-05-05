@@ -6,7 +6,7 @@ A lightweight library for tracking, visualizing, and simulating UI jank (frame d
 
 ## Demo
 
-![Demo](./demo.gif)
+<video src="docs/demo.mp4" width="640" height="360" controls></video>
 
 ---
 
