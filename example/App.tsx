@@ -4,7 +4,7 @@
  * GIF for README: Jank Simulation 탭에 JankDisplay, FrameGraph, 시뮬레이션 버튼이 모두 포함됩니다.
  */
 
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -14,7 +14,13 @@ import {
   ScrollView,
   StatusBar,
 } from 'react-native';
-import FrameStatsProvider from 'react-native-jank-tracker/FrameStatsProvider';
+import {
+  FrameStatsProvider,
+  startJankMonitoring,
+  onJankDetected,
+  simulateNativeJank,
+  simulateJSJank,
+} from 'react-native-jank-tracker';
 import JankDisplay from './components/JankDisplay';
 import FrameGraph from './components/FrameGraph';
 import TTIMeasure from './components/TTIMeasure';
@@ -27,17 +33,31 @@ const TABS = [
 
 type TabKey = (typeof TABS)[number]['key'];
 
-// Jank simulation function
-const simulateJank = (durationMs = 100) => {
-  const startTime = performance.now();
-  while (performance.now() - startTime < durationMs) {
-    // JS thread blocking
-  }
-  console.log(`Simulated jank for ${durationMs}ms`);
+type NativeJankEvent = {
+  source: string;
+  platform: string;
+  duration: number;
+  timestamp: number;
 };
 
 const App = () => {
   const [activeTab, setActiveTab] = useState<TabKey>('jank-simulation');
+  const [jankEvents, setJankEvents] = useState<NativeJankEvent[]>([]);
+
+  useEffect(() => {
+    startJankMonitoring();
+    const sub = onJankDetected((event: NativeJankEvent) => {
+      setJankEvents(prev => [event, ...prev].slice(0, 5)); // 최근 5개만 유지
+      console.log('Native Jank Detected:', event);
+      // 네이티브 이벤트는 콘솔로만 출력
+      console.warn(`Native Jank: ${event.duration?.toFixed(1)}ms`);
+    });
+    return () => {
+      if (sub && sub.remove) {
+        sub.remove();
+      }
+    };
+  }, []);
 
   // 각 탭별 렌더링 함수
   const renderTabContent = () => {
@@ -60,25 +80,57 @@ const App = () => {
               <View style={styles.simButtonCol}>
                 <TouchableOpacity
                   style={[styles.simButton, styles.lightJankButton]}
-                  onPress={() => simulateJank(100)}>
+                  onPress={() => simulateJSJank(100)}>
                   <Text style={styles.simButtonText}>
                     Simulate Light Jank (100ms)
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.simButton, styles.mediumJankButton]}
-                  onPress={() => simulateJank(500)}>
+                  onPress={() => simulateJSJank(500)}>
                   <Text style={styles.simButtonText}>
                     Simulate Medium Jank (500ms)
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.simButton, styles.heavyJankButton]}
-                  onPress={() => simulateJank(2000)}>
+                  onPress={() => simulateJSJank(2000)}>
                   <Text style={styles.simButtonText}>
                     Simulate Heavy Jank (2000ms)
                   </Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.simButton, styles.nativeJankButton]}
+                  onPress={() => simulateNativeJank(200)}>
+                  <Text style={styles.simButtonText}>
+                    Simulate Native Jank (200ms)
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.simButton, styles.nativeJankButton]}
+                  onPress={() => simulateNativeJank(500)}>
+                  <Text style={styles.simButtonText}>
+                    Simulate Native Jank (500ms)
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View style={{marginTop: 24, width: '100%'}}>
+                <Text
+                  style={{fontWeight: 'bold', fontSize: 16, marginBottom: 8}}>
+                  Native Jank Events (최근 5개)
+                </Text>
+                {jankEvents.length === 0 ? (
+                  <Text style={{color: '#888'}}>
+                    No native jank events yet.
+                  </Text>
+                ) : (
+                  jankEvents.map((event, idx) => (
+                    <Text key={idx} style={{fontSize: 13, color: '#333'}}>
+                      [{event.platform}] {event.duration?.toFixed(1)}ms @{' '}
+                      {new Date(event.timestamp).toLocaleTimeString()}
+                    </Text>
+                  ))
+                )}
               </View>
             </View>
           </>
@@ -229,6 +281,9 @@ const styles = StyleSheet.create({
   },
   heavyJankButton: {
     backgroundColor: '#fee2e2',
+  },
+  nativeJankButton: {
+    backgroundColor: '#e0f2fe',
   },
   simButtonText: {
     fontWeight: '500',

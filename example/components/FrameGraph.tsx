@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import {StyleSheet, Text, View, Dimensions} from 'react-native';
 import {LineChart} from 'react-native-chart-kit';
-import {JankContext} from '../../src/JankContext';
+import {JankContext} from 'react-native-jank-tracker';
 
 const screenWidth = Dimensions.get('window').width;
 const TARGET_FPS_MS = 1000 / 60; // 60 FPS target in ms (approx. 16.7ms)

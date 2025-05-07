@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {JankContext} from '../../src/JankContext';
+import {JankContext} from 'react-native-jank-tracker';
 
 const JankDisplay = () => {
   // Standard useContext usage

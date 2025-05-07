@@ -6,7 +6,7 @@ import {
   View,
   ActivityIndicator,
 } from 'react-native';
-import {measureTTI} from 'react-native-jank-tracker/measureTTI';
+import {measureTTI} from 'react-native-jank-tracker';
 
 /**
  * Simulate heavy JS task (blocks thread)

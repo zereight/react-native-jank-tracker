@@ -107,7 +107,7 @@ npm install react-native-jank-tracker
 1. **Wrap your app with the provider (required for jank/frame context):**
 
 ```tsx
-import FrameStatsProvider from 'react-native-jank-tracker/FrameStatsProvider';
+import { FrameStatsProvider } from 'react-native-jank-tracker';
 
 const App = () => <FrameStatsProvider>{/* ...your app... */}</FrameStatsProvider>;
 ```
